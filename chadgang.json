@@ -1,0 +1,11 @@
+{
+  "title": "Bingmo",
+  "description": "Le bingo des idées : écris les mêmes mots que tes potes pour cocher ta grille avant eux !",
+  "author": "ChadGang",
+  "category": "Ambiance",
+  "emoji": "🎯",
+  "joueurs": "2-8",
+  "image": "cover.png",
+  "classement": "victoires",
+  "unite": "synchros"
+}

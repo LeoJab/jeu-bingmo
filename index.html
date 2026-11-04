@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bingmo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="balls" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <canvas id="fx"></canvas>
+  <div id="flash"></div>
+  <div id="vignette"></div>
+  <div id="callout"></div>
+  <div id="floats"></div>
+
+  <main id="app">
+    <header id="bar" hidden>
+      <div class="logo-s">BING<span>MO</span></div>
+      <button id="roomChip" class="chip" title="Copier le code de la salle">🔑 <b id="roomCode">----</b></button>
+      <span class="grow"></span>
+      <button id="btnHelp" class="icon-btn" title="Règles">?</button>
+      <button id="btnSound" class="icon-btn" title="Son">🔊</button>
+      <button id="btnLeave" class="icon-btn" title="Quitter la salle">🚪</button>
+    </header>
+
+    <!-- ACCUEIL -->
+    <section id="s-home" class="screen active">
+      <div class="home-card">
+        <h1 class="logo">BING<span>MO</span></h1>
+        <p class="tagline">Le bingo des idées !<br>Pense comme les autres… mais pas trop.</p>
+        <label id="pseudoRow" class="field" hidden>
+          <span>Ton pseudo</span>
+          <input id="pseudo" maxlength="16" autocomplete="off" placeholder="Pseudo">
+        </label>
+        <button id="btnCreate" class="btn big yellow glow">🎲 Créer une salle</button>
+        <div class="or">ou rejoins tes potes</div>
+        <form id="joinForm" class="join">
+          <input id="code" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="CODE">
+          <button class="btn">Rejoindre</button>
+        </form>
+        <button id="btnRules" class="link">📖 Comment jouer ?</button>
+      </div>
+    </section>
+
+    <!-- SALON -->
+    <section id="s-lobby" class="screen">
+      <div class="panel">
+        <h2>Salon d’attente</h2>
+        <div class="codebox">
+          <span>Code de la salle</span>
+          <b id="lobbyCode">----</b>
+          <button id="btnCopy" class="btn small">Copier</button>
+        </div>
+        <p class="muted">Invite tes potes avec le bouton « Inviter » du hub, ou donne-leur le code.</p>
+        <div id="lobbyPlayers" class="plist"></div>
+        <div id="settings">
+          <div class="srow"><span>Nombre de thèmes</span>
+            <div class="seg"><button data-k="n" data-v="4">4</button><button data-k="n" data-v="6">6</button><button data-k="n" data-v="8">8</button></div>
+          </div>
+          <div class="srow"><span>Temps pour écrire</span>
+            <div class="seg"><button data-k="time" data-v="60">60 s</button><button data-k="time" data-v="90">90 s</button><button data-k="time" data-v="120">120 s</button></div>
+          </div>
+        </div>
+        <p id="lobbyHint" class="hint"></p>
+        <button id="btnStart" class="btn big yellow glow">🚀 Lancer la partie</button>
+      </div>
+    </section>
+
+    <!-- SPECTATEUR / ATTENTE -->
+    <section id="s-wait" class="screen">
+      <div class="panel center">
+        <div class="bigemoji">👀</div>
+        <h2>Partie en cours</h2>
+        <p id="waitMsg">Tu rejoindras la prochaine manche !</p>
+      </div>
+    </section>
+
+    <!-- ÉCRITURE -->
+    <section id="s-write" class="screen">
+      <div class="write-head">
+        <div id="wtimer" class="timer">90</div>
+        <div>
+          <h2>Écris tes mots !</h2>
+          <p>Un mot par thème. Vise le même mot que les autres… sans être trop évident 😈</p>
+        </div>
+      </div>
+      <div id="wbar" class="timebar"><i></i></div>
+      <div id="writeGrid" class="grid"></div>
+      <div class="write-foot">
+        <div id="readyChips" class="rchips"></div>
+        <button id="btnReady" class="btn big yellow">✅ Prêt !</button>
+      </div>
+    </section>
+
+    <!-- JEU -->
+    <section id="s-play" class="screen">
+      <div id="strip" class="strip"></div>
+      <div class="stage">
+        <div id="banner">…</div>
+        <div id="turnbar" class="timebar thin" hidden><i></i></div>
+        <div id="card" class="bcard idle">
+          <div class="bc-theme"></div>
+          <div class="bc-word">?</div>
+          <div class="bc-by"></div>
+          <div class="bc-hits"></div>
+        </div>
+      </div>
+      <div id="feed" class="feed"></div>
+      <div id="myGrid" class="grid mine"></div>
+      <div id="actions">
+        <button id="btnSay" class="btn big yellow" hidden>📣 Annoncer</button>
+        <div class="emos"></div>
+      </div>
+    </section>
+
+    <!-- FIN -->
+    <section id="s-end" class="screen">
+      <div id="endTitle" class="bingmo-title">BINGMO !</div>
+      <p id="endSub" class="endsub"></p>
+      <div id="podium" class="podium"></div>
+      <div class="panel reveal">
+        <h3>👀 Les grilles de tout le monde</h3>
+        <div id="grids" class="grids"></div>
+      </div>
+      <div class="end-btns">
+        <button id="btnAgain" class="btn big yellow glow">🔁 Rejouer</button>
+        <p id="againWait" class="muted" hidden>⏳ L’hôte peut relancer une partie…</p>
+        <div class="emos"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- RÈGLES -->
+  <div id="modal" hidden>
+    <div class="modal-box">
+      <h2>Comment jouer ?</h2>
+      <ol>
+        <li><b>Écris</b> : des thèmes sont tirés (ex. « Un fruit »). Tu as un temps limité pour écrire <b>un mot par thème</b>.</li>
+        <li><b>Annonce</b> : à tour de rôle, un joueur annonce un mot de sa grille. Tous ceux qui ont écrit <b>le même mot pour ce thème</b> cochent leur case !</li>
+        <li><b>Bingmo !</b> Le premier qui a coché toute sa grille gagne.</li>
+      </ol>
+      <p class="muted">Majuscules, accents, articles (« le », « un »…) et pluriels ne comptent pas : « Les Pommes » = « pomme ».</p>
+      <p>😈 <b>Astuce</b> : un mot trop original ne sera jamais coché… mais un mot trop évident aide aussi tes adversaires !</p>
+      <button id="btnCloseRules" class="btn yellow">Compris !</button>
+    </div>
+  </div>
+  <div id="toast"></div>
+
+  <script src="/_sdk.js"></script>
+  <script src="themes.js"></script>
+  <script src="fx.js"></script>
+  <script src="local.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
