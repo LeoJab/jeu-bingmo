@@ -19,8 +19,21 @@ body {
   font-weight: 700;
   color: var(--ink);
   background: var(--blue);
+}
+/* Fond animé discret : points qui dérivent doucement + halos lumineux qui respirent */
+body::before {
+  content: ""; position: fixed; inset: -25%; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 28%, rgba(255, 255, 255, .13), transparent 38%),
+    radial-gradient(circle at 82% 72%, rgba(124, 92, 255, .30), transparent 44%),
+    radial-gradient(circle at 70% 14%, rgba(76, 201, 240, .16), transparent 34%);
+  animation: glowMove 26s ease-in-out infinite alternate;
+}
+body::after {
+  content: ""; position: fixed; inset: -26px; z-index: 0; pointer-events: none;
   background-image: radial-gradient(rgba(255, 255, 255, .12) 2px, transparent 2px);
   background-size: 26px 26px;
+  animation: dotsDrift 14s linear infinite;
 }
 button { font: inherit; color: inherit; }
 [hidden] { display: none !important; }
@@ -39,18 +52,22 @@ button { font: inherit; color: inherit; }
 }
 #vignette.on { animation: vignette 2.2s ease-in-out; }
 
-/* Balles de bingo décoratives */
+/* Balles de bingo et coches décoratives (très discrètes) */
+.balls { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
 .balls i {
-  position: fixed; z-index: 1; width: 70px; height: 70px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff 0 18%, var(--yellow) 19% 100%);
-  border: 3px solid var(--ink); opacity: .35; animation: floaty 9s ease-in-out infinite;
+  position: absolute; left: var(--x); top: var(--y); width: var(--s, 60px); height: var(--s, 60px); border-radius: 50%;
+  border: 3px solid var(--ink); opacity: .26; display: grid; place-items: center;
+  background:
+    radial-gradient(circle at 36% 28%, rgba(255, 255, 255, .8) 0 9%, transparent 10%),
+    radial-gradient(circle, #fff 0 34%, transparent 35%),
+    var(--c, var(--yellow));
+  animation: floaty var(--d, 11s) ease-in-out var(--dl, 0s) infinite;
 }
-.balls i:nth-child(1) { left: 4%; top: 12%; }
-.balls i:nth-child(2) { right: 6%; top: 22%; width: 48px; height: 48px; animation-delay: -2s; background: radial-gradient(circle at 35% 30%, #fff 0 18%, var(--pink) 19%); }
-.balls i:nth-child(3) { left: 10%; bottom: 14%; width: 56px; height: 56px; animation-delay: -4s; background: radial-gradient(circle at 35% 30%, #fff 0 18%, var(--mint) 19%); }
-.balls i:nth-child(4) { right: 12%; bottom: 10%; animation-delay: -6s; background: radial-gradient(circle at 35% 30%, #fff 0 18%, var(--violet) 19%); }
-.balls i:nth-child(5) { left: 46%; top: 4%; width: 36px; height: 36px; animation-delay: -1s; }
-.balls i:nth-child(6) { left: 80%; top: 60%; width: 40px; height: 40px; animation-delay: -5s; background: radial-gradient(circle at 35% 30%, #fff 0 18%, var(--orange) 19%); }
+.balls i::after { content: attr(data-n); font-family: "Arial Black", sans-serif; font-size: calc(var(--s, 60px) * .22); color: var(--ink); }
+.balls b {
+  position: absolute; left: var(--x); bottom: -60px; font-size: var(--s, 34px); color: rgba(255, 255, 255, .16);
+  animation: rise var(--d, 26s) linear var(--dl, 0s) infinite;
+}
 
 /* ---------- Barre du haut ---------- */
 #bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; flex: 0 0 auto; }
@@ -301,7 +318,10 @@ body.spectator #myGrid, body.spectator #btnSay { display: none; }
 @keyframes glow { 0%, 100% { box-shadow: var(--shadow); } 50% { box-shadow: var(--shadow), 0 0 0 5px rgba(255, 212, 38, .55), 0 0 24px 6px rgba(255, 212, 38, .6); } }
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 @keyframes wobble { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg) scale(1.05); } }
-@keyframes floaty { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-26px) rotate(12deg); } }
+@keyframes floaty { 0%, 100% { transform: translate(0, 0) rotate(0); } 33% { transform: translate(14px, -22px) rotate(9deg); } 66% { transform: translate(-12px, -10px) rotate(-7deg); } }
+@keyframes rise { 0% { transform: translateY(0) rotate(-10deg); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateY(-115vh) rotate(14deg); opacity: 0; } }
+@keyframes dotsDrift { from { transform: translate(0, 0); } to { transform: translate(26px, 26px); } }
+@keyframes glowMove { from { transform: translate(-3%, -2%) scale(1); } to { transform: translate(3%, 3%) scale(1.12); } }
 @keyframes dots { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
 @keyframes logoIn { from { transform: scale(.4) rotate(-10deg); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes drop { from { transform: translateY(-120px) rotate(-30deg) scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -309,5 +329,5 @@ body.spectator #myGrid, body.spectator #btnSay { display: none; }
 @keyframes callout { 0% { opacity: 0; transform: scale(.3) rotate(-8deg); } 14% { opacity: 1; transform: scale(1.18) rotate(3deg); } 28% { transform: scale(1) rotate(-2deg); } 78% { opacity: 1; } 100% { opacity: 0; transform: scale(1.35); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .balls i, .logo span, .btn.glow { animation: none !important; }
+  .balls i, .balls b, body::before, body::after, .logo span, .btn.glow { animation: none !important; }
 }
